@@ -2,8 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Simple Calorie Counter</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#2563eb" />
+
+  <!-- iOS home screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Calories" />
+  <link rel="apple-touch-icon" href="/icons/icon-180.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png" />
 
   <style>
     :root {
@@ -34,8 +47,9 @@
       max-width: 430px;
       margin: 0 auto;
       min-height: 100vh;
+      min-height: 100dvh;
       background: var(--bg);
-      padding-bottom: 88px;
+      padding-bottom: calc(88px + env(safe-area-inset-bottom));
     }
 
     header {
@@ -244,7 +258,7 @@
       grid-template-columns: repeat(3, 1fr);
       background: white;
       border-top: 1px solid var(--border);
-      padding: 8px 6px 12px;
+      padding: 8px 6px calc(12px + env(safe-area-inset-bottom));
     }
 
     .tab {
@@ -866,6 +880,14 @@
     }
 
     initialize();
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+      });
+    }
   </script>
 </body>
 </html>
