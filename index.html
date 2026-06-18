@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Calorie Counter</title>
+
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --green: #16a34a;
+      --orange: #f59e0b;
+      --red: #dc2626;
+      --border: #e5e7eb;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--bg);
+      padding-bottom: 88px;
+    }
+
+    header {
+      padding: 24px 20px 12px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      margin: 14px 16px;
+      padding: 18px;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .overview {
+      text-align: center;
+    }
+
+    .big-number {
+      font-size: 44px;
+      font-weight: 800;
+      margin: 8px 0 0;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .stat {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: 16px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .progress-wrap {
+      height: 18px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 18px;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: var(--green);
+      transition: width 0.25s ease;
+    }
+
+    .button {
+      border: none;
+      width: 100%;
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+    }
+
+    .button.secondary {
+      background: #eef2ff;
+      color: var(--primary);
+    }
+
+    .button.danger {
+      background: #fee2e2;
+      color: var(--red);
+    }
+
+    .button.small {
+      width: auto;
+      padding: 9px 12px;
+      font-size: 14px;
+      border-radius: 12px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-size: 16px;
+      outline: none;
+      background: white;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+    }
+
+    .form-row {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 13px 14px;
+    }
+
+    .item-main {
+      min-width: 0;
+    }
+
+    .item-title {
+      font-weight: 700;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .item-sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .link-button {
+      border: none;
+      background: transparent;
+      color: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .delete-button {
+      color: var(--red);
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 18px 8px;
+      font-size: 14px;
+    }
+
+    .tabs {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 8px 6px 12px;
+    }
+
+    .tab {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 4px;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      color: var(--primary);
+      background: #eef2ff;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 430px;
+      max-height: 88vh;
+      overflow-y: auto;
+      background: var(--bg);
+      border-radius: 24px 24px 0 0;
+      padding: 8px 0 20px;
+    }
+
+    .modal-handle {
+      width: 44px;
+      height: 5px;
+      background: #d1d5db;
+      border-radius: 999px;
+      margin: 10px auto 4px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 86px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111827;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      display: none;
+      z-index: 20;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .toast.active {
+      display: block;
+    }
+
+    .warning {
+      color: var(--red);
+      font-weight: 800;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <h1 id="pageTitle">Today</h1>
+      <p id="pageSubtitle">Track your calories for today</p>
+    </header>
+
+    <main>
+      <!-- TODAY SCREEN -->
+      <section id="todayScreen" class="screen active">
+        <div class="card overview">
+          <div class="label">Remaining Today</div>
+          <div id="remainingNumber" class="big-number">0</div>
+          <div id="remainingLabel" class="label">kcal remaining</div>
+
+          <div class="progress-wrap">
+            <div id="progressBar" class="progress"></div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <strong id="consumedNumber">0</strong>
+              <span class="label">Consumed</span>
+            </div>
+            <div class="stat">
+              <strong id="budgetNumber">2000</strong>
+              <span class="label">Budget</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <button class="button" onclick="openAddFoodModal()">+ Add Food</button>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title">Today's Entries</h2>
+          <div id="todayEntries" class="list"></div>
+        </div>
+      </section>
+
+      <!-- MEALS SCREEN -->
+      <section id="mealsScreen" class="screen">
+        <div class="card">
+          <h2 class="section-title">Create Standard Meal</h2>
+
+          <div class="form-row">
+            <input id="mealNameInput" type="text" placeholder="Meal name, e.g. My Breakfast" />
+            <input id="mealCaloriesInput" type="number" placeholder="Calories, e.g. 600" />
+          </div>
+
+          <button class="button" onclick="saveMeal()">Save Meal</button>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title">My Meals</h2>
+          <input id="mealSearchInput" type="text" placeholder="Search my meals" oninput="renderMeals()" style="margin-bottom: 12px;" />
+          <div id="myMealsList" class="list"></div>
+        </div>
+      </section>
+
+      <!-- SETTINGS SCREEN -->
+      <section id="settingsScreen" class="screen">
+        <div class="card">
+          <h2 class="section-title">Daily Calorie Budget</h2>
+
+          <div class="form-row">
+            <input id="budgetInput" type="number" placeholder="Daily budget, e.g. 2000" />
+          </div>
+
+          <button class="button" onclick="saveBudget()">Save Budget</button>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title">Data</h2>
+
+          <div class="form-row">
+            <button class="button secondary" onclick="clearToday()">Delete Today's Entries</button>
+            <button class="button danger" onclick="resetAllData()">Delete All Data</button>
+          </div>
+
+          <p class="muted" style="font-size: 13px;">
+            This prototype stores data only in your browser using localStorage.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabs">
+      <button id="todayTab" class="tab active" onclick="showScreen('today')">Today</button>
+      <button id="mealsTab" class="tab" onclick="showScreen('meals')">Meals</button>
+      <button id="settingsTab" class="tab" onclick="showScreen('settings')">Settings</button>
+    </nav>
+  </div>
+
+  <!-- ADD FOOD MODAL -->
+  <div id="addFoodModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
+    <div class="modal">
+      <div class="modal-handle"></div>
+
+      <div class="card">
+        <h2 class="section-title">Add Food</h2>
+
+        <div class="form-row">
+          <input id="foodSearchInput" type="text" placeholder="Search meals or foods" oninput="renderAddFoodLists()" />
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Quick Manual Entry</h2>
+
+        <div class="form-row">
+          <input id="manualNameInput" type="text" placeholder="Name, e.g. Snack" />
+          <input id="manualCaloriesInput" type="number" placeholder="Calories, e.g. 250" />
+        </div>
+
+        <button class="button" onclick="addManualEntry()">Add Calories</button>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">My Meals</h2>
+        <div id="addMyMealsList" class="list"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Reference Foods</h2>
+        <div id="referenceFoodsList" class="list"></div>
+      </div>
+
+      <div class="card">
+        <button class="button secondary" onclick="closeAddFoodModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const STORAGE_KEY = "simpleCalorieCounterData";
+
+    const referenceFoods = [
+      { id: "apple", name: "Apple", calories: 95, category: "Fruit" },
+      { id: "banana", name: "Banana", calories: 105, category: "Fruit" },
+      { id: "mcd_hamburger", name: "McDonald's Hamburger", calories: 250, category: "Fast Food" },
+      { id: "mcd_cheeseburger", name: "McDonald's Cheeseburger", calories: 300, category: "Fast Food" },
+      { id: "mcd_big_mac", name: "McDonald's Big Mac", calories: 563, category: "Fast Food" },
+      { id: "mcd_quarter_pounder", name: "McDonald's Quarter Pounder", calories: 520, category: "Fast Food" },
+      { id: "mcd_medium_fries", name: "McDonald's Medium Fries", calories: 337, category: "Fast Food" }
+    ];
+
+    let data = loadData();
+
+    function loadData() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if (saved) {
+        return JSON.parse(saved);
+      }
+
+      return {
+        dailyBudget: 2000,
+        meals: [
+          {
+            id: crypto.randomUUID(),
+            name: "My Breakfast",
+            calories: 600
+          },
+          {
+            id: crypto.randomUUID(),
+            name: "Protein Shake",
+            calories: 250
+          }
+        ],
+        entries: []
+      };
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function todayString() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function currentTimeString() {
+      return new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function getTodayEntries() {
+      return data.entries.filter(entry => entry.date === todayString());
+    }
+
+    function getConsumedToday() {
+      return getTodayEntries().reduce((sum, entry) => sum + Number(entry.calories), 0);
+    }
+
+    function renderToday() {
+      const consumed = getConsumedToday();
+      const budget = Number(data.dailyBudget) || 0;
+      const remaining = budget - consumed;
+      const percentage = budget > 0 ? Math.min((consumed / budget) * 100, 100) : 0;
+
+      document.getElementById("consumedNumber").textContent = consumed;
+      document.getElementById("budgetNumber").textContent = budget;
+      document.getElementById("remainingNumber").textContent = Math.abs(remaining);
+
+      const remainingLabel = document.getElementById("remainingLabel");
+
+      if (remaining >= 0) {
+        remainingLabel.textContent = "kcal remaining";
+        remainingLabel.classList.remove("warning");
+      } else {
+        remainingLabel.textContent = "kcal over budget";
+        remainingLabel.classList.add("warning");
+      }
+
+      const progressBar = document.getElementById("progressBar");
+      progressBar.style.width = percentage + "%";
+
+      if (consumed > budget) {
+        progressBar.style.background = "var(--red)";
+      } else if (consumed >= budget * 0.7) {
+        progressBar.style.background = "var(--orange)";
+      } else {
+        progressBar.style.background = "var(--green)";
+      }
+
+      renderTodayEntries();
+    }
+
+    function renderTodayEntries() {
+      const container = document.getElementById("todayEntries");
+      const entries = getTodayEntries().slice().reverse();
+
+      if (entries.length === 0) {
+        container.innerHTML = `<div class="empty">No food added yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = entries.map(entry => `
+        <div class="item">
+          <div class="item-main">
+            <div class="item-title">${escapeHtml(entry.name)}</div>
+            <div class="item-sub">${entry.time} · ${entry.source}</div>
+          </div>
+          <div class="item-actions">
+            <strong>${entry.calories} kcal</strong>
+            <button class="link-button delete-button" onclick="deleteEntry('${entry.id}')">Delete</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function addEntry(name, calories, source) {
+      const cleanName = String(name || "Food").trim();
+      const cleanCalories = Number(calories);
+
+      if (!cleanName || !cleanCalories || cleanCalories <= 0) {
+        showToast("Please enter a valid name and calories.");
+        return;
+      }
+
+      data.entries.push({
+        id: crypto.randomUUID(),
+        date: todayString(),
+        time: currentTimeString(),
+        name: cleanName,
+        calories: cleanCalories,
+        source
+      });
+
+      saveData();
+      renderToday();
+      showToast(`${cleanName} added`);
+    }
+
+    function deleteEntry(id) {
+      data.entries = data.entries.filter(entry => entry.id !== id);
+      saveData();
+      renderToday();
+      showToast("Entry deleted");
+    }
+
+    function addManualEntry() {
+      const name = document.getElementById("manualNameInput").value || "Manual Entry";
+      const calories = document.getElementById("manualCaloriesInput").value;
+
+      addEntry(name, calories, "manual");
+
+      document.getElementById("manualNameInput").value = "";
+      document.getElementById("manualCaloriesInput").value = "";
+
+      closeAddFoodModal();
+    }
+
+    function saveMeal() {
+      const nameInput = document.getElementById("mealNameInput");
+      const caloriesInput = document.getElementById("mealCaloriesInput");
+
+      const name = nameInput.value.trim();
+      const calories = Number(caloriesInput.value);
+
+      if (!name || !calories || calories <= 0) {
+        showToast("Please enter a valid meal name and calories.");
+        return;
+      }
+
+      data.meals.push({
+        id: crypto.randomUUID(),
+        name,
+        calories
+      });
+
+      saveData();
+
+      nameInput.value = "";
+      caloriesInput.value = "";
+
+      renderMeals();
+      renderAddFoodLists();
+      showToast("Meal saved");
+    }
+
+    function deleteMeal(id) {
+      data.meals = data.meals.filter(meal => meal.id !== id);
+      saveData();
+      renderMeals();
+      renderAddFoodLists();
+      showToast("Meal deleted");
+    }
+
+    function renderMeals() {
+      const container = document.getElementById("myMealsList");
+      const query = document.getElementById("mealSearchInput").value.toLowerCase();
+
+      const meals = data.meals.filter(meal =>
+        meal.name.toLowerCase().includes(query)
+      );
+
+      if (meals.length === 0) {
+        container.innerHTML = `<div class="empty">No meals found.</div>`;
+        return;
+      }
+
+      container.innerHTML = meals.map(meal => `
+        <div class="item">
+          <div class="item-main">
+            <div class="item-title">${escapeHtml(meal.name)}</div>
+            <div class="item-sub">Personal meal</div>
+          </div>
+          <div class="item-actions">
+            <strong>${meal.calories} kcal</strong>
+            <button class="link-button" onclick="addEntry('${escapeJs(meal.name)}', ${meal.calories}, 'personal meal')">Add</button>
+            <button class="link-button delete-button" onclick="deleteMeal('${meal.id}')">Delete</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderAddFoodLists() {
+      const query = document.getElementById("foodSearchInput").value.toLowerCase();
+
+      const matchingMeals = data.meals.filter(meal =>
+        meal.name.toLowerCase().includes(query)
+      );
+
+      const matchingReferenceFoods = referenceFoods.filter(food =>
+        food.name.toLowerCase().includes(query) ||
+        food.category.toLowerCase().includes(query)
+      );
+
+      const myMealsContainer = document.getElementById("addMyMealsList");
+      const referenceContainer = document.getElementById("referenceFoodsList");
+
+      if (matchingMeals.length === 0) {
+        myMealsContainer.innerHTML = `<div class="empty">No saved meals found.</div>`;
+      } else {
+        myMealsContainer.innerHTML = matchingMeals.map(meal => `
+          <div class="item">
+            <div class="item-main">
+              <div class="item-title">${escapeHtml(meal.name)}</div>
+              <div class="item-sub">Personal meal</div>
+            </div>
+            <div class="item-actions">
+              <strong>${meal.calories} kcal</strong>
+              <button class="button small" onclick="addEntryAndClose('${escapeJs(meal.name)}', ${meal.calories}, 'personal meal')">Add</button>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      if (matchingReferenceFoods.length === 0) {
+        referenceContainer.innerHTML = `<div class="empty">No reference foods found.</div>`;
+      } else {
+        referenceContainer.innerHTML = matchingReferenceFoods.map(food => `
+          <div class="item">
+            <div class="item-main">
+              <div class="item-title">${escapeHtml(food.name)}</div>
+              <div class="item-sub">${escapeHtml(food.category)}</div>
+            </div>
+            <div class="item-actions">
+              <strong>${food.calories} kcal</strong>
+              <button class="button small" onclick="addEntryAndClose('${escapeJs(food.name)}', ${food.calories}, 'reference food')">Add</button>
+            </div>
+          </div>
+        `).join("");
+      }
+    }
+
+    function addEntryAndClose(name, calories, source) {
+      addEntry(name, calories, source);
+      closeAddFoodModal();
+    }
+
+    function saveBudget() {
+      const budgetInput = document.getElementById("budgetInput");
+      const budget = Number(budgetInput.value);
+
+      if (!budget || budget <= 0) {
+        showToast("Please enter a valid calorie budget.");
+        return;
+      }
+
+      data.dailyBudget = budget;
+      saveData();
+      renderToday();
+      showToast("Budget saved");
+    }
+
+    function clearToday() {
+      const confirmed = confirm("Delete all entries for today?");
+
+      if (!confirmed) return;
+
+      data.entries = data.entries.filter(entry => entry.date !== todayString());
+      saveData();
+      renderToday();
+      showToast("Today's entries deleted");
+    }
+
+    function resetAllData() {
+      const confirmed = confirm("Delete all app data? This cannot be undone.");
+
+      if (!confirmed) return;
+
+      localStorage.removeItem(STORAGE_KEY);
+      data = loadData();
+      initialize();
+      showToast("All data deleted");
+    }
+
+    function showScreen(screenName) {
+      const screens = ["today", "meals", "settings"];
+
+      screens.forEach(name => {
+        document.getElementById(name + "Screen").classList.remove("active");
+        document.getElementById(name + "Tab").classList.remove("active");
+      });
+
+      document.getElementById(screenName + "Screen").classList.add("active");
+      document.getElementById(screenName + "Tab").classList.add("active");
+
+      if (screenName === "today") {
+        document.getElementById("pageTitle").textContent = "Today";
+        document.getElementById("pageSubtitle").textContent = "Track your calories for today";
+        renderToday();
+      }
+
+      if (screenName === "meals") {
+        document.getElementById("pageTitle").textContent = "Meals";
+        document.getElementById("pageSubtitle").textContent = "Create your standard meals";
+        renderMeals();
+      }
+
+      if (screenName === "settings") {
+        document.getElementById("pageTitle").textContent = "Settings";
+        document.getElementById("pageSubtitle").textContent = "Manage your calorie budget";
+        document.getElementById("budgetInput").value = data.dailyBudget;
+      }
+    }
+
+    function openAddFoodModal() {
+      document.getElementById("addFoodModal").classList.add("active");
+      document.getElementById("foodSearchInput").value = "";
+      renderAddFoodLists();
+    }
+
+    function closeAddFoodModal() {
+      document.getElementById("addFoodModal").classList.remove("active");
+    }
+
+    function closeModalOnBackdrop(event) {
+      if (event.target.id === "addFoodModal") {
+        closeAddFoodModal();
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+
+      setTimeout(() => {
+        toast.classList.remove("active");
+      }, 1800);
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeJs(text) {
+      return String(text)
+        .replaceAll("\\", "\\\\")
+        .replaceAll("'", "\\'");
+    }
+
+    function initialize() {
+      document.getElementById("budgetInput").value = data.dailyBudget;
+      renderToday();
+      renderMeals();
+      renderAddFoodLists();
+    }
+
+    initialize();
+  </script>
+</body>
+</html>
