@@ -7,7 +7,8 @@
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#2563eb" />
+  <meta name="theme-color" content="#2563eb" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1e3a8a" media="(prefers-color-scheme: dark)" />
 
   <!-- iOS home screen -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -30,6 +31,63 @@
       --red: #dc2626;
       --border: #e5e7eb;
       --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --stat-bg: #f9fafb;
+      --input-bg: #ffffff;
+      --primary-tint: #eef2ff;
+      --progress-track: #e5e7eb;
+      --modal-handle: #d1d5db;
+      --toast-bg: #111827;
+      --toast-text: #ffffff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --border: #334155;
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        --stat-bg: #162032;
+        --input-bg: #1e293b;
+        --primary-tint: #1e3a8a;
+        --progress-track: #334155;
+        --modal-handle: #475569;
+        --toast-bg: #f1f5f9;
+        --toast-text: #111827;
+      }
+    }
+
+    [data-theme="light"] {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --stat-bg: #f9fafb;
+      --input-bg: #ffffff;
+      --primary-tint: #eef2ff;
+      --progress-track: #e5e7eb;
+      --modal-handle: #d1d5db;
+      --toast-bg: #111827;
+      --toast-text: #ffffff;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #334155;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --stat-bg: #162032;
+      --input-bg: #1e293b;
+      --primary-tint: #1e3a8a;
+      --progress-track: #334155;
+      --modal-handle: #475569;
+      --toast-bg: #f1f5f9;
+      --toast-text: #111827;
     }
 
     * {
@@ -54,14 +112,18 @@
 
     header {
       padding: 24px 20px 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
     }
 
-    header h1 {
+    .header-text h1 {
       margin: 0;
       font-size: 28px;
     }
 
-    header p {
+    .header-text p {
       margin: 6px 0 0;
       color: var(--muted);
       font-size: 14px;
@@ -98,7 +160,7 @@
     }
 
     .stat {
-      background: #f9fafb;
+      background: var(--stat-bg);
       border: 1px solid var(--border);
       padding: 14px;
       border-radius: 16px;
@@ -112,7 +174,7 @@
 
     .progress-wrap {
       height: 18px;
-      background: #e5e7eb;
+      background: var(--progress-track);
       border-radius: 999px;
       overflow: hidden;
       margin-top: 18px;
@@ -138,7 +200,7 @@
     }
 
     .button.secondary {
-      background: #eef2ff;
+      background: var(--primary-tint);
       color: var(--primary);
     }
 
@@ -161,7 +223,8 @@
       padding: 13px 14px;
       font-size: 16px;
       outline: none;
-      background: white;
+      background: var(--input-bg);
+      color: var(--text);
     }
 
     input:focus {
@@ -193,7 +256,7 @@
       justify-content: space-between;
       gap: 12px;
       border: 1px solid var(--border);
-      background: #ffffff;
+      background: var(--card);
       border-radius: 16px;
       padding: 13px 14px;
     }
@@ -256,7 +319,7 @@
       max-width: 430px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      background: white;
+      background: var(--card);
       border-top: 1px solid var(--border);
       padding: 8px 6px calc(12px + env(safe-area-inset-bottom));
     }
@@ -274,7 +337,7 @@
 
     .tab.active {
       color: var(--primary);
-      background: #eef2ff;
+      background: var(--primary-tint);
     }
 
     .modal-backdrop {
@@ -304,7 +367,7 @@
     .modal-handle {
       width: 44px;
       height: 5px;
-      background: #d1d5db;
+      background: var(--modal-handle);
       border-radius: 999px;
       margin: 10px auto 4px;
     }
@@ -314,8 +377,8 @@
       bottom: 86px;
       left: 50%;
       transform: translateX(-50%);
-      background: #111827;
-      color: white;
+      background: var(--toast-bg);
+      color: var(--toast-text);
       padding: 12px 16px;
       border-radius: 999px;
       font-size: 14px;
@@ -343,14 +406,35 @@
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
+
+    .header-text {
+      flex: 1;
+    }
+
+    .theme-toggle {
+      background: var(--stat-bg);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 </head>
 
 <body>
   <div class="app">
     <header>
-      <h1 id="pageTitle">Today</h1>
-      <p id="pageSubtitle">Track your calories for today</p>
+      <div class="header-text">
+        <h1 id="pageTitle">Today</h1>
+        <p id="pageSubtitle">Track your calories for today</p>
+      </div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
     </header>
 
     <main>
@@ -872,7 +956,35 @@
         .replaceAll("'", "\\'");
     }
 
+    function applyTheme(theme) {
+      const root = document.documentElement;
+      if (theme === 'light' || theme === 'dark') {
+        root.dataset.theme = theme;
+      } else {
+        delete root.dataset.theme;
+      }
+      const isDark = theme === 'dark' ||
+        (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
+    }
+
+    function toggleTheme() {
+      const current = localStorage.getItem('theme');
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      let next;
+      if (!current) {
+        next = systemDark ? 'light' : 'dark';
+      } else if (current === 'dark') {
+        next = 'light';
+      } else {
+        next = 'dark';
+      }
+      localStorage.setItem('theme', next);
+      applyTheme(next);
+    }
+
     function initialize() {
+      applyTheme(localStorage.getItem('theme'));
       document.getElementById("budgetInput").value = data.dailyBudget;
       renderToday();
       renderMeals();
