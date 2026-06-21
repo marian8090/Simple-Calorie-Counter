@@ -472,13 +472,10 @@
     /* Category pills */
     .cat-pills {
       display: flex;
+      flex-wrap: wrap;
       gap: 6px;
-      overflow-x: auto;
       padding-bottom: 8px;
-      scrollbar-width: none;
     }
-
-    .cat-pills::-webkit-scrollbar { display: none; }
 
     .cat-pill {
       border: 1px solid var(--border);
@@ -499,33 +496,17 @@
       color: white;
     }
 
-    /* Portion strip */
-    .portion-strip {
-      display: flex;
-      gap: 5px;
-      align-items: center;
-      padding: 0 0 10px;
-    }
-
-    .portion-label {
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 600;
-      flex-shrink: 0;
-      margin-right: 2px;
-    }
-
+    /* Portion buttons (used in confirm sheet) */
     .portion-btn {
       border: 1px solid var(--border);
       background: var(--card);
       color: var(--text);
       border-radius: 8px;
-      padding: 4px 8px;
-      font-size: 12px;
+      padding: 6px 10px;
+      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
-      flex-shrink: 0;
     }
 
     .portion-btn.active {
@@ -542,55 +523,107 @@
       padding: 0 12px 12px;
     }
 
-    /* Tile grid */
+    /* Compact food list */
     .food-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 10px;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin-top: 8px;
     }
 
     .food-tile {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 10px;
+      border-radius: 12px;
+      padding: 10px 12px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      text-align: center;
-      gap: 4px;
-      cursor: pointer;
+      gap: 10px;
     }
 
-    .food-tile-emoji { font-size: 26px; line-height: 1; }
+    .food-tile-emoji { font-size: 20px; flex-shrink: 0; line-height: 1; }
+
+    .food-tile-info { flex: 1; min-width: 0; }
 
     .food-tile-name {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
-      line-height: 1.3;
-      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .food-tile-kcal {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--muted);
+      margin-top: 1px;
     }
 
-    .food-tile-kcal.adjusted { color: var(--orange); font-weight: 700; }
-
     .food-tile-add {
-      margin-top: 6px;
       border: none;
       background: var(--primary);
       color: white;
       border-radius: 8px;
-      padding: 5px 14px;
+      padding: 6px 12px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
-      width: 100%;
+      flex-shrink: 0;
+      width: auto;
+    }
+
+    /* Confirm sheet */
+    .confirm-sheet {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: var(--card);
+      border-radius: 20px 20px 0 0;
+      padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+      box-shadow: 0 -4px 32px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 5;
+    }
+
+    .confirm-sheet.active { display: flex; }
+
+    .confirm-handle {
+      width: 40px; height: 4px;
+      background: var(--modal-handle);
+      border-radius: 999px;
+      margin: 0 auto -6px;
+    }
+
+    .confirm-food {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .confirm-emoji { font-size: 32px; flex-shrink: 0; }
+
+    .confirm-name { font-weight: 800; font-size: 16px; }
+
+    .confirm-kcal { color: var(--muted); font-size: 14px; margin-top: 3px; }
+
+    .confirm-portions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .confirm-cancel {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: center;
+      padding: 4px;
     }
 
     .food-section-title {
@@ -759,11 +792,6 @@
       </div>
 
       <div class="cat-pills" id="catPills"></div>
-
-      <div class="portion-strip">
-        <span class="portion-label">Portion:</span>
-        <div id="portionBtns"></div>
-      </div>
     </div>
 
     <div class="modal-body" id="modalBody">
@@ -775,6 +803,21 @@
         <button class="manual-add-btn" onclick="addManualEntry()">+ Add</button>
       </div>
     </div>
+
+    <!-- Confirm sheet: slides up after tapping + Add on a tile -->
+    <div id="confirmSheet" class="confirm-sheet">
+      <div class="confirm-handle"></div>
+      <div class="confirm-food">
+        <span id="confirmEmoji" class="confirm-emoji"></span>
+        <div>
+          <div id="confirmName" class="confirm-name"></div>
+          <div id="confirmKcal" class="confirm-kcal"></div>
+        </div>
+      </div>
+      <div id="confirmPortions" class="confirm-portions"></div>
+      <button class="button" id="confirmAddBtn">Add to Today</button>
+      <button class="confirm-cancel" onclick="closeConfirmSheet()">Cancel</button>
+    </div>
   </div>
 
   <div id="toast" class="toast"></div>
@@ -784,8 +827,9 @@
 
     const PORTIONS = [0.5, 0.75, 1, 1.25, 1.5, 2];
     const PORTION_LABELS = ['½×', '¾×', '1×', '1¼×', '1½×', '2×'];
-    let currentPortion = 1;
     let currentCategory = 'All';
+    let pendingFood = null;
+    let pendingPortion = 1;
 
     const CATEGORIES = ['All', 'My Meals', 'Breakfast', 'Fast Food', 'Popular Dishes', 'Drinks', 'Snacks', 'Ready Meals'];
 
@@ -1095,35 +1139,61 @@
       `).join("");
     }
 
-    function buildPortionBtns() {
-      const el = document.getElementById("portionBtns");
-      el.style.display = "flex";
-      el.style.gap = "5px";
-      el.innerHTML = PORTIONS.map((p, i) => `
-        <button class="portion-btn${p === currentPortion ? ' active' : ''}"
-                onclick="selectPortion(${p})">${PORTION_LABELS[i]}</button>
-      `).join("");
-    }
-
     function selectCategory(cat) {
       currentCategory = cat;
       buildCatPills();
       renderAddFoodLists();
     }
 
-    function selectPortion(p) {
-      currentPortion = p;
-      buildPortionBtns();
-      renderAddFoodLists();
+    // ── CONFIRM SHEET ──
+
+    function openConfirmSheet(name, baseCalories, source, emoji) {
+      pendingFood = { name, baseCalories, source, emoji };
+      pendingPortion = 1;
+      renderConfirmSheet();
+      document.getElementById('confirmSheet').classList.add('active');
+    }
+
+    function renderConfirmSheet() {
+      const adjCal = Math.round(pendingFood.baseCalories * pendingPortion);
+      const portionLabel = PORTION_LABELS[PORTIONS.indexOf(pendingPortion)];
+      document.getElementById('confirmEmoji').textContent = pendingFood.emoji;
+      document.getElementById('confirmName').textContent = pendingFood.name;
+      document.getElementById('confirmKcal').textContent = pendingPortion === 1
+        ? `${adjCal} kcal`
+        : `${pendingFood.baseCalories} → ${adjCal} kcal (${portionLabel})`;
+      document.getElementById('confirmPortions').innerHTML = PORTIONS.map((p, i) => `
+        <button class="portion-btn${p === pendingPortion ? ' active' : ''}"
+                onclick="selectPendingPortion(${p})">${PORTION_LABELS[i]}</button>
+      `).join('');
+      document.getElementById('confirmAddBtn').onclick = () => {
+        const finalName = pendingPortion !== 1
+          ? `${pendingFood.name} (${PORTION_LABELS[PORTIONS.indexOf(pendingPortion)]})`
+          : pendingFood.name;
+        addEntry(finalName, Math.round(pendingFood.baseCalories * pendingPortion), pendingFood.source);
+        closeConfirmSheet();
+        closeAddFoodModal();
+      };
+    }
+
+    function selectPendingPortion(p) {
+      pendingPortion = p;
+      renderConfirmSheet();
+    }
+
+    function closeConfirmSheet() {
+      document.getElementById('confirmSheet').classList.remove('active');
+      pendingFood = null;
     }
 
     function openAddFoodModal() {
-      currentPortion = 1;
       currentCategory = 'All';
+      pendingFood = null;
+      pendingPortion = 1;
       document.getElementById("foodSearchInput").value = "";
       document.getElementById("addFoodModal").classList.add("active");
+      document.getElementById("confirmSheet").classList.remove("active");
       buildCatPills();
-      buildPortionBtns();
       renderAddFoodLists();
       document.getElementById("foodSearchInput").focus();
     }
@@ -1177,9 +1247,6 @@
       }
 
       // Render tiles
-      const portionLabel = PORTION_LABELS[PORTIONS.indexOf(currentPortion)];
-      const adjusted = currentPortion !== 1;
-
       const tilesHtml = sections.map(sec => {
         if (sec.items.length === 0) {
           return `<div class="food-section-title">${escapeHtml(sec.title)}</div>
@@ -1188,20 +1255,16 @@
         return `
           <div class="food-section-title">${escapeHtml(sec.title)}</div>
           <div class="food-grid">
-            ${sec.items.map(item => {
-              const adjCal = Math.round(item.calories * currentPortion);
-              const kcalDisplay = adjusted
-                ? `${item.calories} → <span style="color:var(--orange);font-weight:700">${adjCal} kcal</span> (${portionLabel})`
-                : `${item.calories} kcal`;
-              return `
-                <div class="food-tile">
-                  <div class="food-tile-emoji">${item.emoji}</div>
+            ${sec.items.map(item => `
+              <div class="food-tile">
+                <div class="food-tile-emoji">${item.emoji}</div>
+                <div class="food-tile-info">
                   <div class="food-tile-name">${escapeHtml(item.name)}</div>
-                  <div class="food-tile-kcal">${kcalDisplay}</div>
-                  <button class="food-tile-add" onclick="addRefAndClose('${escapeJs(item.name)}', ${item.calories}, '${escapeJs(item.source)}')">+ Add</button>
+                  <div class="food-tile-kcal">${item.calories} kcal</div>
                 </div>
-              `;
-            }).join("")}
+                <button class="food-tile-add" onclick="openConfirmSheet('${escapeJs(item.name)}', ${item.calories}, '${escapeJs(item.source)}', '${escapeJs(item.emoji)}')">+ Add</button>
+              </div>
+            `).join("")}
           </div>
         `;
       }).join("");
@@ -1221,13 +1284,6 @@
       `;
     }
 
-    function addRefAndClose(name, baseCalories, source) {
-      const calories = Math.round(baseCalories * currentPortion);
-      const portionLabel = PORTION_LABELS[PORTIONS.indexOf(currentPortion)];
-      const label = currentPortion !== 1 ? `${name} (${portionLabel})` : name;
-      addEntry(label, calories, source);
-      closeAddFoodModal();
-    }
 
     // ── THEME ──
 
