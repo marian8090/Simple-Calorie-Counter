@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- White rounded-square background -->
+  <rect width="64" height="64" rx="14" fill="#ffffff"/>
+  <!-- Subtle border -->
+  <rect width="64" height="64" rx="14" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+  <!-- Italic CC in primary blue -->
+  <text x="32" y="45"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="700"
+        fill="#2563eb"
+        text-anchor="middle"
+        letter-spacing="-2">CC</text>
+</svg>

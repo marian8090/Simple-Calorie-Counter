@@ -1,8 +1,9 @@
-const CACHE_NAME = 'calorie-counter-v3';
+const CACHE_NAME = 'calorie-counter-v4';
 const ASSETS = [
   './',
   'index.html',
   'manifest.json',
+  'favicon.svg',
   'icons/icon-120.png',
   'icons/icon-152.png',
   'icons/icon-167.png',
